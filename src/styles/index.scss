@@ -1,0 +1,46 @@
+html,
+body,
+div,
+p,
+ul,
+li {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#app,
+.app-main {
+  height: 100%;
+}
+
+ul li {
+  list-style: none;
+}
+
+.flex {
+  display: flex;
+}
+
+.flexRow {
+  @extend .flex;
+  flex-direction: row;
+}
+
+.flexCol {
+  @extend .flex;
+  flex-direction: column;
+}
+
+.flexCC {
+  @extend .flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flexBC {
+  @extend .flex;
+  justify-content: space-between;
+  align-items: center;
+}
