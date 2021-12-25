@@ -3,7 +3,13 @@ import VueRouter, { RouteConfig } from 'vue-router'
 
 Vue.use(VueRouter)
 
-const routes: Array<RouteConfig> = []
+const routes: Array<RouteConfig> = [
+  {
+    name: 'Main',
+    path: '/',
+    component: () => import('@/views/Danmaku/index.vue')
+  }
+]
 
 const router = new VueRouter({
   routes
