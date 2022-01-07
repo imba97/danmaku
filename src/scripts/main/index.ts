@@ -3,22 +3,33 @@ import {
   screen,
   protocol,
   BrowserWindow,
-  Menu,
-  ipcMain,
-  ipcRenderer
+  remote,
+  Remote,
+  ipcMain
 } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import {
+  OriginalEventType,
+  RendererReceivedMainSend,
+  WindowEventType
+} from '@/scripts/renderer/Event/EventEnum'
+import { WindowConctrl } from '@/scripts/enums/Window'
+
 import _ from 'lodash'
-import { EventManager } from '@/base/Event/EventManager'
-import { IBrowserWindow } from '@/base/Event/EventInterface'
-import { RendererReceivedMainSend } from '@/base/Event/EventEnum'
+import EventManager from 'electron-vue-event-manager'
+import { IBrowserWindow } from '@/scripts/renderer/Event/EventInterface'
+
+import '@/scripts/main/Network'
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
+
+const browserWindow: IBrowserWindow[] = []
 
 type IWindow = {
   [key: string]: {
@@ -30,11 +41,22 @@ type IWindow = {
     height: number
     path: string
     dev: string
+    transparent?: boolean
   }
 }
 
 async function createWindow() {
   // Menu.setApplicationMenu(null)
+
+  ipcMain.on(OriginalEventType.Close, (_event, type: string) => {
+    const item = _.find(browserWindow, {
+      type
+    })
+
+    if (item) {
+      item.window.close()
+    }
+  })
 
   const windows: IWindow = {
     /**
@@ -46,7 +68,8 @@ async function createWindow() {
       width: 1600,
       height: 900,
       path: 'app://./main.html',
-      dev: 'main.html'
+      dev: 'main.html',
+      transparent: false
     },
 
     /**
@@ -58,7 +81,8 @@ async function createWindow() {
       width: 300 + (isDevelopment ? 800 : 0),
       height: 400 + (isDevelopment ? 300 : 0),
       path: 'app://./danmaku.html',
-      dev: 'danmaku.html'
+      dev: 'danmaku.html',
+      transparent: true
     }
   }
 
@@ -68,16 +92,15 @@ async function createWindow() {
   windows.danmaku.y =
     screen.getPrimaryDisplay().workAreaSize.height - windows.danmaku.height
 
-  const browserWindow: IBrowserWindow[] = []
-
   _.forEach(windows, async (window) => {
-    const win = new BrowserWindow({
+    let win: BrowserWindow = new BrowserWindow({
       x: window.x,
       y: window.y,
       title: window.title,
       width: window.width,
       height: window.height,
-      // frame: false,
+      frame: false,
+      transparent: window.transparent,
       webPreferences: {
         // Use pluginOptions.nodeIntegration, leave this alone
         // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -86,6 +109,8 @@ async function createWindow() {
         contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
       }
     })
+
+    win.webContents.backgroundThrottling = false
 
     browserWindow.push({
       window: win,
@@ -102,6 +127,24 @@ async function createWindow() {
       createProtocol('app')
       // Load the index.html when not in development
       win.loadURL(window.path)
+    }
+
+    // 窗口监听事件
+    switch (window.type) {
+      case RendererReceivedMainSend.Main: {
+        // 监听最小化最大化
+        EventManager.Instance().addEventListener<WindowConctrl>(
+          WindowEventType.MainWindowConctrl,
+          (type) => {
+            windowConctrl(win, type)
+          }
+        )
+
+        break
+      }
+      case RendererReceivedMainSend.Danmaku: {
+        break
+      }
     }
   })
 
@@ -150,5 +193,29 @@ if (isDevelopment) {
     process.on('SIGTERM', () => {
       app.quit()
     })
+  }
+}
+
+function windowConctrl(win: BrowserWindow, type: WindowConctrl) {
+  switch (type) {
+    case WindowConctrl.Maximize: {
+      win.maximize()
+      break
+    }
+
+    case WindowConctrl.Minimize: {
+      win.minimize()
+      break
+    }
+
+    case WindowConctrl.Restore: {
+      win.restore()
+      break
+    }
+
+    case WindowConctrl.Close: {
+      win.close()
+      break
+    }
   }
 }
