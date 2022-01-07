@@ -1,4 +1,4 @@
-import SingletonBase from '@/base/Singleton'
+import SingletonBase from '@/scripts/renderer/Singleton'
 
 export default class Util extends SingletonBase {
   public GET(key: string): string {

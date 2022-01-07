@@ -56,13 +56,12 @@
 
 <script lang="ts">
 import _ from 'lodash'
-import axios from 'axios'
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Watch } from 'vue-property-decorator'
 import { LiveWS } from 'bilibili-live-ws'
 
-import { KoeBilibiliDanmaku } from '@/types/Danmaku'
-import { EventManager } from '@/base/Event/EventManager'
-import { EventType } from '@/base/Event/EventEnum'
+import { KoeBilibiliDanmaku } from '@/scripts/types/Danmaku'
+import EventManager from 'electron-vue-event-manager'
+import { EventType } from '@/scripts/renderer/Event/EventEnum'
 
 @Component
 export default class Danmaku extends Vue {
@@ -71,12 +70,12 @@ export default class Danmaku extends Vue {
     DANMU_MSG: []
   }
 
-  created() {
+  @Watch('danmaku.DANMU_MSG')
+  danmakuMessageChanged(danmaku: KoeBilibiliDanmaku.Danmaku[]) {
+    speechSynthesis.speak(new SpeechSynthesisUtterance(danmaku[danmaku.length - 1].message))
+  }
 
-    // 监听主窗口消息
-    EventManager.Instance().addEventListener<string>(EventType.MainSendTest, (str) => {
-      console.log(EventType.MainSendTest, str)
-    })
+  created() {
 
     _.forEach([1, 2, 3, 4, 5], (num) => {
       this.danmaku.DANMU_MSG.push({
@@ -99,8 +98,6 @@ export default class Danmaku extends Vue {
 
       // 监听弹幕消息
       live.on('DANMU_MSG', (data) => {
-        console.log(data)
-
         const id = `${data.info[9].ct}${data.info[9].ts}`
 
         const uid = data.info[2][0]
@@ -144,10 +141,6 @@ export default class Danmaku extends Vue {
   }
 
   test() {
-
-    EventManager.Instance().broadcast<string>(EventType.MainSendTest, 'DanmakuSendTest')
-    EventManager.Instance().broadcast<string>(EventType.DanmakuSendTest, 'DanmakuSendTest')
-
     const num = this.danmaku.DANMU_MSG.length + 1
     this.danmaku.DANMU_MSG.push({
       id: `${num}`,

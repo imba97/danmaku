@@ -12,7 +12,7 @@
     "postuninstall": "electron-builder install-app-deps",
     "if": "node dev/iconfont.js"
   },
-  "main": "background.js",
+  "main": "scripts/main/index.js",
   "dependencies": {
     "animate.css": "^4.1.1",
     "axios": "^0.24.0",
@@ -20,6 +20,7 @@
     "buffer": "^6.0.3",
     "bufferutil": "^4.0.5",
     "core-js": "^3.6.5",
+    "electron-vue-event-manager": "^0.0.2",
     "lodash": "^4.17.21",
     "pako": "^2.0.4",
     "utf-8-validate": "^5.0.7",

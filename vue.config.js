@@ -1,3 +1,6 @@
+const path = require('path')
+// import path from 'path'
+
 module.exports = {
   pages: {
     main: {
@@ -20,7 +23,8 @@ module.exports = {
 
   pluginOptions: {
     electronBuilder: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      mainProcessFile: path.resolve(__dirname, 'src/scripts/main/index.ts')
     }
   }
 }

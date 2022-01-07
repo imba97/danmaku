@@ -6,19 +6,34 @@
   overflow: hidden;
 
   .app-header {
-    padding: 0 10px;
-    height: 30px;
+    $header-height: 30px;
+    padding-left: 10px;
+    height: $header-height;
     background-color: #ccc;
 
     -webkit-app-region: drag;
 
+    .no-drag {
+      -webkit-app-region: no-drag;
+    }
+
     .control-buttons {
-      width: 100px;
+      height: $header-height;
+
+      & > div {
+        width: $header-height;
+        height: $header-height;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &:hover {
+          background-color: #900;
+        }
+      }
 
       i {
-        display: block;
-        height: 100%;
-
         &.icon-close {
           font-size: 20px;
         }
@@ -37,16 +52,16 @@
     <div v-show="showHeader" class="app-header flexBC">
       <div class="app-title">danmaku</div>
       <div class="control-buttons flexBC">
-        <div>
+        <div class="no-drag" @click="minimize">
           <i class="iconfont icon-minimize"></i>
         </div>
-        <div>
-          <i class="iconfont icon-full-screen-exit"></i>
-        </div>
-        <div>
+        <div v-show="!isMaximize" class="no-drag" @click="maximize">
           <i class="iconfont icon-full-screen-enter"></i>
         </div>
-        <div>
+        <div v-show="isMaximize" class="no-drag" @click="restore">
+          <i class="iconfont icon-full-screen-exit"></i>
+        </div>
+        <div class="no-drag" @click="close">
           <i class="iconfont icon-close"></i>
         </div>
       </div>
@@ -61,21 +76,48 @@
 import _ from 'lodash'
 import { Vue, Component } from 'vue-property-decorator'
 
-import { EventManager } from '@/base/Event/EventManager'
-import { RendererReceivedMainSend } from '@/base/Event/EventEnum'
+import { ipcRenderer, remote, Remote } from 'electron'
 
-EventManager.Instance().rendererInit(RendererReceivedMainSend.Main)
+import EventManager from 'electron-vue-event-manager'
+import { OriginalEventType, RendererReceivedMainSend, WindowEventType } from '@/scripts/renderer/Event/EventEnum'
+import { WindowConctrl } from '@/scripts/enums/Window'
+
+EventManager.Instance().rendererInit()
 
 @Component({
   name: 'Main'
 })
 export default class Main extends Vue {
 
-  public showHeader = false
+  showHeader = false
+
+  /**
+   * 是否是最大化
+   */
+  isMaximize = false
 
   created() {
     const path = window.location.href.split('/')
     this.showHeader = !~_.get(path, path.length - 1, '').indexOf('Danmaku')
+  }
+
+  maximize() {
+    EventManager.Instance().broadcast(WindowEventType.MainWindowConctrl, WindowConctrl.Maximize)
+    this.isMaximize = true
+  }
+
+  restore() {
+    EventManager.Instance().broadcast(WindowEventType.MainWindowConctrl, WindowConctrl.Restore)
+    this.isMaximize = false
+  }
+
+  minimize() {
+    EventManager.Instance().broadcast(WindowEventType.MainWindowConctrl, WindowConctrl.Minimize)
+  }
+
+  close() {
+    ipcRenderer.send(OriginalEventType.Close, RendererReceivedMainSend.Main)
+    // EventManager.Instance().broadcast(WindowEventType.MainWindowConctrl, WindowConctrl.Close)
   }
 }
 </script>

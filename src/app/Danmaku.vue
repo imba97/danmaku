@@ -34,6 +34,7 @@
 
 <template>
   <div class="app-main">
+    <div class="app-header"></div>
     <div class="app-content">
       <router-view></router-view>
     </div>
@@ -44,8 +45,9 @@
 import _ from 'lodash'
 import { Vue, Component } from 'vue-property-decorator'
 
-import { EventManager } from '@/base/Event/EventManager'
-import { RendererReceivedMainSend } from '@/base/Event/EventEnum'
+import EventManager from 'electron-vue-event-manager'
+
+EventManager.Instance().rendererInit()
 
 @Component({
   name: 'Main'
@@ -53,9 +55,5 @@ import { RendererReceivedMainSend } from '@/base/Event/EventEnum'
 export default class Danmaku extends Vue {
 
   public showHeader = false
-
-  created() {
-    EventManager.Instance().rendererInit(RendererReceivedMainSend.Danmaku)
-  }
 }
 </script>

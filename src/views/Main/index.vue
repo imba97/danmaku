@@ -3,14 +3,14 @@
 
 <template>
   <div>
-    <button @click="test">主窗口像弹幕窗口发送</button>
+    <button @click="test">主窗口向弹幕窗口发送</button>
   </div>
 </template>
 
 <script lang="ts">
 
-import { EventType } from '@/base/Event/EventEnum'
-import { EventManager } from '@/base/Event/EventManager'
+import { EventType } from '@/scripts/renderer/Event/EventEnum'
+import EventManager from 'electron-vue-event-manager'
 import { Vue, Component } from 'vue-property-decorator'
 
 @Component
@@ -23,7 +23,7 @@ export default class Main extends Vue {
   }
 
   test() {
-    EventManager.Instance().broadcast<string>(EventType.MainSendTest, '从主窗口来的信息')
+    console.log('test')
   }
 }
 
