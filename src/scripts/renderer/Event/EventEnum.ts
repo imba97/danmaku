@@ -12,21 +12,23 @@ export enum EventType {
 
 export enum WindowEventType {
   /**
-   * 主窗口最小化
+   * 主窗口控制键
    */
   MainWindowConctrl = 'MainWindowConctrl',
 
   /**
-   * 弹幕窗口最大化
+   * 主窗口状态发生改变
+   *  - 最大化
+   *  - 取消最大化
    */
-  DanmakuMaximize = 'DanmakuMaximize'
+  MainWindowStateChanged = 'MainWindowStateChanged'
 }
 
 export enum OriginalEventType {
   Close = 'Close'
 }
 
-export const RendererReceivedMainSend = Object.freeze({
+export const RendererReceivedMainMessage = Object.freeze({
   Main: 'main',
   Danmaku: 'danmaku'
 })

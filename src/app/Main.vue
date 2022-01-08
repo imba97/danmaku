@@ -58,7 +58,7 @@
         <div v-show="!isMaximize" class="no-drag" @click="maximize">
           <i class="iconfont icon-full-screen-enter"></i>
         </div>
-        <div v-show="isMaximize" class="no-drag" @click="restore">
+        <div v-show="isMaximize" class="no-drag" @click="unmaximize">
           <i class="iconfont icon-full-screen-exit"></i>
         </div>
         <div class="no-drag" @click="close">
@@ -76,11 +76,11 @@
 import _ from 'lodash'
 import { Vue, Component } from 'vue-property-decorator'
 
-import { ipcRenderer, remote, Remote } from 'electron'
+import { ipcRenderer } from 'electron'
 
 import EventManager from 'electron-vue-event-manager'
-import { OriginalEventType, RendererReceivedMainSend, WindowEventType } from '@/scripts/renderer/Event/EventEnum'
-import { WindowConctrl } from '@/scripts/enums/Window'
+import { OriginalEventType, RendererReceivedMainMessage, WindowEventType } from '@/scripts/renderer/Event/EventEnum'
+import { WindowConctrl, WindowStateChange } from '@/scripts/enums/Window'
 
 EventManager.Instance().rendererInit()
 
@@ -99,6 +99,17 @@ export default class Main extends Vue {
   created() {
     const path = window.location.href.split('/')
     this.showHeader = !~_.get(path, path.length - 1, '').indexOf('Danmaku')
+
+    this.createWindowStateChangedListener()
+  }
+
+  /**
+   * 创建窗口状态改变监听器
+   */
+  createWindowStateChangedListener() {
+    EventManager.Instance().addEventListener<WindowStateChange>(WindowEventType.MainWindowStateChanged, (windowStateChange) => {
+      this.isMaximize = windowStateChange === WindowStateChange.Maximize
+    })
   }
 
   maximize() {
@@ -106,8 +117,8 @@ export default class Main extends Vue {
     this.isMaximize = true
   }
 
-  restore() {
-    EventManager.Instance().broadcast(WindowEventType.MainWindowConctrl, WindowConctrl.Restore)
+  unmaximize() {
+    EventManager.Instance().broadcast(WindowEventType.MainWindowConctrl, WindowConctrl.Unmaximize)
     this.isMaximize = false
   }
 
@@ -116,8 +127,7 @@ export default class Main extends Vue {
   }
 
   close() {
-    ipcRenderer.send(OriginalEventType.Close, RendererReceivedMainSend.Main)
-    // EventManager.Instance().broadcast(WindowEventType.MainWindowConctrl, WindowConctrl.Close)
+    ipcRenderer.send(OriginalEventType.Close, RendererReceivedMainMessage.Main)
   }
 }
 </script>

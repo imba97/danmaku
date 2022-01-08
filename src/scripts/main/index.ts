@@ -11,16 +11,17 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import {
   OriginalEventType,
-  RendererReceivedMainSend,
+  RendererReceivedMainMessage,
   WindowEventType
 } from '@/scripts/renderer/Event/EventEnum'
-import { WindowConctrl } from '@/scripts/enums/Window'
+import { WindowConctrl, WindowStateChange } from '@/scripts/enums/Window'
 
 import _ from 'lodash'
 import EventManager from 'electron-vue-event-manager'
 import { IBrowserWindow } from '@/scripts/renderer/Event/EventInterface'
 
 import '@/scripts/main/Network'
+import { createWindowStateListener } from './Window'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -64,7 +65,7 @@ async function createWindow() {
      */
     main: {
       title: 'main',
-      type: RendererReceivedMainSend.Main,
+      type: RendererReceivedMainMessage.Main,
       width: 1600,
       height: 900,
       path: 'app://./main.html',
@@ -77,7 +78,7 @@ async function createWindow() {
      */
     danmaku: {
       title: 'danmaku',
-      type: RendererReceivedMainSend.Danmaku,
+      type: RendererReceivedMainMessage.Danmaku,
       width: 300 + (isDevelopment ? 800 : 0),
       height: 400 + (isDevelopment ? 300 : 0),
       path: 'app://./danmaku.html',
@@ -131,7 +132,7 @@ async function createWindow() {
 
     // 窗口监听事件
     switch (window.type) {
-      case RendererReceivedMainSend.Main: {
+      case RendererReceivedMainMessage.Main: {
         // 监听最小化最大化
         EventManager.Instance().addEventListener<WindowConctrl>(
           WindowEventType.MainWindowConctrl,
@@ -142,10 +143,13 @@ async function createWindow() {
 
         break
       }
-      case RendererReceivedMainSend.Danmaku: {
+      case RendererReceivedMainMessage.Danmaku: {
         break
       }
     }
+
+    // 创建窗口状态监听
+    createWindowStateListener(win)
   })
 
   EventManager.Instance().mainInit(browserWindow)
@@ -208,8 +212,8 @@ function windowConctrl(win: BrowserWindow, type: WindowConctrl) {
       break
     }
 
-    case WindowConctrl.Restore: {
-      win.restore()
+    case WindowConctrl.Unmaximize: {
+      win.unmaximize()
       break
     }
 

@@ -12,7 +12,7 @@
     "postuninstall": "electron-builder install-app-deps",
     "if": "node dev/iconfont.js"
   },
-  "main": "scripts/main/index.js",
+  "main": "background.js",
   "dependencies": {
     "animate.css": "^4.1.1",
     "axios": "^0.24.0",
