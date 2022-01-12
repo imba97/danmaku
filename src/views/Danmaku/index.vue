@@ -112,6 +112,8 @@ export default class Danmaku extends Vue {
         const messageTemp = data.info[1]
         const messageReg = /^\/(\w+) (.*)/.exec(messageTemp)
 
+        const calculatorReg = /^[\d\+\-\*\/]+$/.exec(messageTemp)
+
         const message = messageReg !== null ? messageReg[2] : messageTemp
 
         if (message === 'clear') {
@@ -124,6 +126,12 @@ export default class Danmaku extends Vue {
           sender,
           message,
           custom_animation: messageReg !== null ? messageReg[1] : ''
+        }
+
+        if (calculatorReg !== null) {
+          const num = eval(calculatorReg[0]) as number
+          const numString = ~(`${num}`.indexOf('.')) ? num.toFixed(2) : num
+          danmaku.message = `${calculatorReg[0]}=${numString}`
         }
 
         const index = this.danmaku.DANMU_MSG.push(danmaku)

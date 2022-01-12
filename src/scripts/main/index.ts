@@ -20,7 +20,9 @@ import _ from 'lodash'
 import EventManager from 'electron-vue-event-manager'
 import { IBrowserWindow } from '@/scripts/renderer/Event/EventInterface'
 
-import '@/scripts/main/Network'
+// 网络请求监听器
+// import '@/scripts/main/Network'
+
 import { createWindowStateListener } from './Window'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'

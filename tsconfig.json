@@ -18,6 +18,9 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "electron-vue-event-manager": [
+        "D:/Projects/electron-vue-event-manager/electron-vue-event-manager"
       ]
     },
     "lib": [

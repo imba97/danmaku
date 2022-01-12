@@ -13,6 +13,8 @@ import { EventType } from '@/scripts/renderer/Event/EventEnum'
 import EventManager from 'electron-vue-event-manager'
 import { Vue, Component } from 'vue-property-decorator'
 
+import { NetWorkBilibili } from '@/scripts/renderer/Network/bilibili'
+
 @Component
 export default class Main extends Vue {
   created() {
@@ -23,7 +25,9 @@ export default class Main extends Vue {
   }
 
   test() {
-    console.log('test')
+    NetWorkBilibili.User.Instance().getUserInfo(2198461).then(res => {
+      console.log('ohhhh', res)
+    })
   }
 }
 

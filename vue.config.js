@@ -21,15 +21,6 @@ module.exports = {
     }
   },
 
-  configureWebpack: {
-    resolve: {
-      alias: {
-        'electron-vue-event-manager':
-          'D:/Projects/electron-vue-event-manager/electron-vue-event-manager/dist/index.js'
-      }
-    }
-  },
-
   pluginOptions: {
     electronBuilder: {
       nodeIntegration: true,

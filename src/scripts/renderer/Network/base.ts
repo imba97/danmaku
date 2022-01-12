@@ -1,5 +1,10 @@
-import SingletonBase from '@/scripts/renderer/Singleton'
+import _ from 'lodash'
 import axios, { AxiosRequestConfig } from 'axios'
+
+import EventManager from 'electron-vue-event-manager'
+import { EventType } from '../Event/EventEnum'
+
+import SingletonBase from '@/scripts/renderer/Singleton'
 
 export default class NetWorkRequest extends SingletonBase {
   /**
@@ -8,18 +13,17 @@ export default class NetWorkRequest extends SingletonBase {
   protected baseUrl!: string
 
   /**
-   * axios 实例
-   */
-  private _axios = axios.create({
-    baseURL: this.baseUrl
-  })
-
-  /**
    * 发起请求
    * @param options
    * @returns
    */
   protected async request(options: AxiosRequestConfig): Promise<any> {
-    return (await this._axios(options)).data
+    // 设置 baseUrl
+    if (this.baseUrl) {
+      _.set(options, 'baseURL', this.baseUrl)
+    }
+
+    // 向主进程请求
+    return EventManager.Instance().sendRequest(options)
   }
 }
