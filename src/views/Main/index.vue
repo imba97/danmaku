@@ -9,7 +9,7 @@
 
 <script lang="ts">
 
-import { EventType } from '@/scripts/renderer/Event/EventEnum'
+import { DanmakuEventType } from 'D:/Projects/@types-koe-bilibili-danmaku'
 import EventManager from 'electron-vue-event-manager'
 import { Vue, Component } from 'vue-property-decorator'
 
@@ -19,7 +19,7 @@ import { NetWorkBilibili } from '@/scripts/renderer/Network/bilibili'
 export default class Main extends Vue {
   created() {
     console.log('main addEventListener')
-    EventManager.Instance().addEventListener<string>(EventType.ReceivedDanmaku, (danmaku) => {
+    EventManager.Instance().addEventListener<string>(DanmakuEventType.ReceivedDanmaku, (danmaku) => {
       console.log('Danmaku', danmaku)
     })
   }

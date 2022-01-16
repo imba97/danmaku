@@ -1,14 +1,6 @@
-export enum EventType {
-  /**
-   * 接收了到弹幕
-   */
-  ReceivedDanmaku = 'ReceivedDanmaku',
+// export enum EventType {
 
-  /**
-   * 网络请求
-   */
-  NetWorkRequest = 'NetWorkRequest'
-}
+// }
 
 export enum WindowEventType {
   /**
@@ -24,11 +16,17 @@ export enum WindowEventType {
   MainWindowStateChanged = 'MainWindowStateChanged'
 }
 
+/**
+ * 原生事件类型
+ */
 export enum OriginalEventType {
   Close = 'Close'
 }
 
-export const RendererReceivedMainMessage = Object.freeze({
+/**
+ * 渲染进程类型
+ */
+export const RendererType = Object.freeze({
   Main: 'main',
   Danmaku: 'danmaku'
 })

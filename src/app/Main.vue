@@ -79,7 +79,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import { ipcRenderer } from 'electron'
 
 import EventManager from 'electron-vue-event-manager'
-import { OriginalEventType, RendererReceivedMainMessage, WindowEventType } from '@/scripts/renderer/Event/EventEnum'
+import { OriginalEventType, RendererType, WindowEventType } from '@/scripts/renderer/Event/EventEnum'
 import { WindowConctrl, WindowStateChange } from '@/scripts/enums/Window'
 
 EventManager.Instance().rendererInit()
@@ -127,7 +127,7 @@ export default class Main extends Vue {
   }
 
   close() {
-    ipcRenderer.send(OriginalEventType.Close, RendererReceivedMainMessage.Main)
+    ipcRenderer.send(OriginalEventType.Close, RendererType.Main)
   }
 }
 </script>

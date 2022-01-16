@@ -1,8 +1,7 @@
 import _ from 'lodash'
-import axios, { AxiosRequestConfig } from 'axios'
+import { AxiosRequestConfig } from 'axios'
 
 import EventManager from 'electron-vue-event-manager'
-import { EventType } from '../Event/EventEnum'
 
 import SingletonBase from '@/scripts/renderer/Singleton'
 

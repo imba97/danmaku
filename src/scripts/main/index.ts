@@ -11,10 +11,10 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import {
   OriginalEventType,
-  RendererReceivedMainMessage,
+  RendererType,
   WindowEventType
 } from '@/scripts/renderer/Event/EventEnum'
-import { WindowConctrl, WindowStateChange } from '@/scripts/enums/Window'
+import { WindowConctrl } from '@/scripts/enums/Window'
 
 import _ from 'lodash'
 import EventManager from 'electron-vue-event-manager'
@@ -24,6 +24,14 @@ import { IBrowserWindow } from '@/scripts/renderer/Event/EventInterface'
 // import '@/scripts/main/Network'
 
 import { createWindowStateListener } from './Window'
+import { createDanmakuReceiver } from './DanmakuReceiver'
+
+import Animate from 'D:/Projects/koe-bilibili-danmaku-plugins/animate'
+import Calculator from 'D:/Projects/koe-bilibili-danmaku-plugins/calculator'
+import Dictioncry from 'D:/Projects/koe-bilibili-danmaku-plugins/dictionary'
+import Nbnhhsh from 'D:/Projects/koe-bilibili-danmaku-plugins/nbnhhsh'
+
+console.log(app.getPath('userData'))
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -67,7 +75,7 @@ async function createWindow() {
      */
     main: {
       title: 'main',
-      type: RendererReceivedMainMessage.Main,
+      type: RendererType.Main,
       width: 1600,
       height: 900,
       path: 'app://./main.html',
@@ -80,7 +88,7 @@ async function createWindow() {
      */
     danmaku: {
       title: 'danmaku',
-      type: RendererReceivedMainMessage.Danmaku,
+      type: RendererType.Danmaku,
       width: 300 + (isDevelopment ? 800 : 0),
       height: 400 + (isDevelopment ? 300 : 0),
       path: 'app://./danmaku.html',
@@ -134,7 +142,7 @@ async function createWindow() {
 
     // 窗口监听事件
     switch (window.type) {
-      case RendererReceivedMainMessage.Main: {
+      case RendererType.Main: {
         // 监听最小化最大化
         EventManager.Instance().addEventListener<WindowConctrl>(
           WindowEventType.MainWindowConctrl,
@@ -145,7 +153,7 @@ async function createWindow() {
 
         break
       }
-      case RendererReceivedMainMessage.Danmaku: {
+      case RendererType.Danmaku: {
         break
       }
     }
@@ -185,6 +193,9 @@ app.on('ready', async () => {
     }
   }
   createWindow()
+
+  // 创建弹幕接收器
+  createDanmakuReceiver([new Animate(), new Calculator(), new Dictioncry()])
 })
 
 // Exit cleanly on request from parent process in development mode.

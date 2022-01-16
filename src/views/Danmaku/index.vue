@@ -57,11 +57,11 @@
 <script lang="ts">
 import _ from 'lodash'
 import { Vue, Component, Watch } from 'vue-property-decorator'
-import { LiveWS } from 'bilibili-live-ws'
 
 import { KoeBilibiliDanmaku } from '@/scripts/types/Danmaku'
 import EventManager from 'electron-vue-event-manager'
-import { EventType } from '@/scripts/renderer/Event/EventEnum'
+
+import { DanmakuEventType } from 'D:/Projects/@types-koe-bilibili-danmaku'
 
 @Component
 export default class Danmaku extends Vue {
@@ -80,71 +80,18 @@ export default class Danmaku extends Vue {
     _.forEach([1, 2, 3, 4, 5], (num) => {
       this.danmaku.DANMU_MSG.push({
         id: `${num}`,
+        uid: 2198461,
         sender: 'imba久期',
         message: `测试测试测试_${num}`
       })
     })
 
-    const live = new LiveWS(5316)
-    // 建立 WebSocket 连接
-    live.on('open', () => console.log('opened'))
-    // 连接已确认
-    live.on('live', () => {
-      // 心跳包
-      live.on('heartbeat', (popularity) => {
-        // 人气值
-        this.danmaku.popularity = popularity
-      })
+    EventManager.Instance().addEventListener<number>(DanmakuEventType.PopularityChanged, popularity => {
+      this.danmaku.popularity = popularity
+    })
 
-      // 监听弹幕消息
-      live.on('DANMU_MSG', (data) => {
-        const id = `${data.info[9].ct}${data.info[9].ts}`
-
-        const uid = data.info[2][0]
-
-        // axios
-        //   .get(`https://api.bilibili.com/x/space/acc/info?mid=${uid}`)
-        //   .then((res) => {
-        //     console.log(res.data)
-        //   })
-
-        const sender = data.info[2][1]
-        const messageTemp = data.info[1]
-        const messageReg = /^\/(\w+) (.*)/.exec(messageTemp)
-
-        const calculatorReg = /^[\d\+\-\*\/]+$/.exec(messageTemp)
-
-        const message = messageReg !== null ? messageReg[2] : messageTemp
-
-        if (message === 'clear') {
-          this.danmaku.DANMU_MSG = []
-          return
-        }
-
-        const danmaku = {
-          id,
-          sender,
-          message,
-          custom_animation: messageReg !== null ? messageReg[1] : ''
-        }
-
-        if (calculatorReg !== null) {
-          const num = eval(calculatorReg[0]) as number
-          const numString = ~(`${num}`.indexOf('.')) ? num.toFixed(2) : num
-          danmaku.message = `${calculatorReg[0]}=${numString}`
-        }
-
-        const index = this.danmaku.DANMU_MSG.push(danmaku)
-
-        EventManager.Instance().broadcast<KoeBilibiliDanmaku.Danmaku>(EventType.ReceivedDanmaku, danmaku)
-
-        setTimeout(() => {
-          console.log('remove')
-          const danmakuIndex = index - 1
-          if (!_.has(this.danmaku.DANMU_MSG, danmakuIndex)) return
-          this.danmaku.DANMU_MSG[index - 1].custom_animation = 'none'
-        }, 2000)
-      })
+    EventManager.Instance().addEventListener<KoeBilibiliDanmaku.Danmaku>(DanmakuEventType.ReceivedDanmaku, danmaku => {
+      this.danmaku.DANMU_MSG.push(danmaku)
     })
   }
 
@@ -152,6 +99,7 @@ export default class Danmaku extends Vue {
     const num = this.danmaku.DANMU_MSG.length + 1
     this.danmaku.DANMU_MSG.push({
       id: `${num}`,
+      uid: 2198461,
       sender: 'imba久期',
       message: `测试测试测试_${num}`
     })

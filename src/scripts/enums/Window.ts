@@ -1,3 +1,6 @@
+/**
+ * 窗口控制（点击按钮）
+ */
 export enum WindowConctrl {
   /**
    * 最大化
@@ -21,7 +24,7 @@ export enum WindowConctrl {
 }
 
 /**
- * 窗口状态变化
+ * 窗口状态变化（自身变化）
  */
 export enum WindowStateChange {
   /**
