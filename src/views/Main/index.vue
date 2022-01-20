@@ -9,7 +9,7 @@
 
 <script lang="ts">
 
-import { DanmakuEventType } from 'D:/Projects/@types-koe-bilibili-danmaku'
+import { DanmakuEventType } from 'D:/Projects/koe-bilibili-danmaku-library'
 import EventManager from 'electron-vue-event-manager'
 import { Vue, Component } from 'vue-property-decorator'
 

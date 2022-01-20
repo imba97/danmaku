@@ -61,7 +61,7 @@ import { Vue, Component, Watch } from 'vue-property-decorator'
 import { KoeBilibiliDanmaku } from '@/scripts/types/Danmaku'
 import EventManager from 'electron-vue-event-manager'
 
-import { DanmakuEventType } from 'D:/Projects/@types-koe-bilibili-danmaku'
+import { DanmakuEventType } from 'D:/Projects/koe-bilibili-danmaku-library'
 
 @Component
 export default class Danmaku extends Vue {

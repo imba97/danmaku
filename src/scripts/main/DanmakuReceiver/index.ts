@@ -3,9 +3,10 @@ import { LiveTCP } from 'bilibili-live-ws'
 import EventManager from 'electron-vue-event-manager'
 
 import {
+  DanmakuEventType,
   IKoePlugin,
-  DanmakuEventType
-} from 'D:/Projects/@types-koe-bilibili-danmaku'
+  KoePlugin
+} from 'koe-bilibili-danmaku-library'
 
 export function createDanmakuReceiver(plugins: IKoePlugin[]) {
   const live = new LiveTCP(5316)
@@ -23,6 +24,12 @@ export function createDanmakuReceiver(plugins: IKoePlugin[]) {
       )
     })
 
+    const pluginsInstance: KoePlugin[] = []
+    for (let i = 0; i < plugins.length; i++) {
+      const plugin = plugins[i]
+      pluginsInstance.push(new plugin())
+    }
+
     // 监听弹幕消息
     live.on('DANMU_MSG', async (data) => {
       const id = `${data.info[9].ct}${data.info[9].ts}`
@@ -39,9 +46,9 @@ export function createDanmakuReceiver(plugins: IKoePlugin[]) {
         message
       }
 
-      for (let i = 0; i < plugins.length; i++) {
-        const plugin = plugins[i]
-        danmaku = await plugin.handle(danmaku)
+      for (let i = 0; i < pluginsInstance.length; i++) {
+        const instance = pluginsInstance[i]
+        danmaku = await instance.handle(danmaku)
       }
 
       console.log(`${danmaku.sender}: ${danmaku.message}`)

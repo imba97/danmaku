@@ -25,13 +25,14 @@ import { IBrowserWindow } from '@/scripts/renderer/Event/EventInterface'
 
 import { createWindowStateListener } from './Window'
 import { createDanmakuReceiver } from './DanmakuReceiver'
+import { loadPlugins } from './PluginLoader'
 
-import Animate from 'D:/Projects/koe-bilibili-danmaku-plugins/animate'
-import Calculator from 'D:/Projects/koe-bilibili-danmaku-plugins/calculator'
-import Dictioncry from 'D:/Projects/koe-bilibili-danmaku-plugins/dictionary'
-import Nbnhhsh from 'D:/Projects/koe-bilibili-danmaku-plugins/nbnhhsh'
+const plugins = loadPlugins()
 
-console.log(app.getPath('userData'))
+// import Animate from 'D:/Projects/koe-bilibili-danmaku-plugins/animate'
+// import Calculator from 'D:/Projects/koe-bilibili-danmaku-plugins/calculator'
+// import Dictioncry from 'D:/Projects/koe-bilibili-danmaku-plugins/dictionary'
+// import Nbnhhsh from 'D:/Projects/koe-bilibili-danmaku-plugins/nbnhhsh'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -195,7 +196,7 @@ app.on('ready', async () => {
   createWindow()
 
   // 创建弹幕接收器
-  createDanmakuReceiver([new Animate(), new Calculator(), new Dictioncry()])
+  createDanmakuReceiver(plugins)
 })
 
 // Exit cleanly on request from parent process in development mode.
