@@ -62,6 +62,7 @@ import { KoeBilibiliDanmaku } from '@/scripts/types/Danmaku'
 import EventManager from 'electron-vue-event-manager'
 
 import { DanmakuEventType } from 'D:/Projects/koe-bilibili-danmaku-library'
+import { ipcRenderer } from 'electron'
 
 @Component
 export default class Danmaku extends Vue {
@@ -76,6 +77,12 @@ export default class Danmaku extends Vue {
   }
 
   created() {
+
+    // 进入页面获取一次人气值
+    ipcRenderer.send(DanmakuEventType.GetPopularity)
+    ipcRenderer.once(DanmakuEventType.GetPopularity, (_, popularity) => {
+      this.danmaku.popularity = popularity
+    })
 
     _.forEach([1, 2, 3, 4, 5], (num) => {
       this.danmaku.DANMU_MSG.push({

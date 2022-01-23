@@ -1,5 +1,6 @@
 import { KoeBilibiliDanmaku } from '@/scripts/types/Danmaku'
 import { LiveTCP } from 'bilibili-live-ws'
+import { ipcMain } from 'electron'
 import EventManager from 'electron-vue-event-manager'
 
 import {
@@ -9,6 +10,11 @@ import {
 } from 'koe-bilibili-danmaku-library'
 
 export function createDanmakuReceiver(plugins: IKoePlugin[]) {
+  /**
+   * 人气值
+   */
+  let _popularity = 0
+
   const live = new LiveTCP(5316)
   // 建立 WebSocket 连接
   live.on('open', () => console.log('opened'))
@@ -16,12 +22,18 @@ export function createDanmakuReceiver(plugins: IKoePlugin[]) {
   live.on('live', () => {
     // 心跳包
     live.on('heartbeat', (popularity) => {
-      console.log(popularity)
-      // 人气值
+      // 主动获取人气时使用
+      _popularity = popularity
+      // 人气值推送
       EventManager.Instance().broadcast<number>(
         DanmakuEventType.PopularityChanged,
         popularity
       )
+    })
+
+    // 主动获取人气值监听
+    ipcMain.once(DanmakuEventType.GetPopularity, (event) => {
+      event.sender.send(DanmakuEventType.GetPopularity, _popularity)
     })
 
     const pluginsInstance: KoePlugin[] = []

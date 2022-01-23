@@ -27,13 +27,6 @@ import { createWindowStateListener } from './Window'
 import { createDanmakuReceiver } from './DanmakuReceiver'
 import { loadPlugins } from './PluginLoader'
 
-const plugins = loadPlugins()
-
-// import Animate from 'D:/Projects/koe-bilibili-danmaku-plugins/animate'
-// import Calculator from 'D:/Projects/koe-bilibili-danmaku-plugins/calculator'
-// import Dictioncry from 'D:/Projects/koe-bilibili-danmaku-plugins/dictionary'
-// import Nbnhhsh from 'D:/Projects/koe-bilibili-danmaku-plugins/nbnhhsh'
-
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
@@ -196,6 +189,7 @@ app.on('ready', async () => {
   createWindow()
 
   // 创建弹幕接收器
+  const plugins = loadPlugins()
   createDanmakuReceiver(plugins)
 })
 
