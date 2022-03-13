@@ -25,7 +25,6 @@ import { IBrowserWindow } from '@/scripts/renderer/Event/EventInterface'
 
 import { createWindowStateListener } from './Window'
 import { createDanmakuReceiver } from './DanmakuReceiver'
-import { loadPlugins } from './PluginLoader'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -188,9 +187,7 @@ app.on('ready', async () => {
   }
   createWindow()
 
-  // 创建弹幕接收器
-  const plugins = loadPlugins()
-  createDanmakuReceiver(plugins)
+  createDanmakuReceiver()
 })
 
 // Exit cleanly on request from parent process in development mode.

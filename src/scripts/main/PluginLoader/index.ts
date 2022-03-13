@@ -3,7 +3,7 @@ import fs from 'fs-extra'
 import path from 'path'
 
 import { app } from 'electron'
-import { IKoePlugin, KoePlugin } from 'koe-bilibili-danmaku-library'
+import { IKoePlugin } from 'koe-bilibili-danmaku-library'
 
 export function loadPlugins(): IKoePlugin[] {
   const filePath = path.resolve(app.getPath('userData'), 'plugins.json')
@@ -30,7 +30,7 @@ export function loadPlugins(): IKoePlugin[] {
       const pluginModule = loadFile(pluginsList[key]).default
       plugins.push(pluginModule)
     } catch (e) {
-      console.log('err', pluginsList[key])
+      console.log(`${pluginsList[key]} err: `, e)
     }
   }
 

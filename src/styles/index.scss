@@ -13,6 +13,8 @@ body,
 #app,
 .app-main {
   height: 100%;
+
+  overflow: hidden !important;
 }
 
 ul li {

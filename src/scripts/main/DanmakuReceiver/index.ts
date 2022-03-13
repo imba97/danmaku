@@ -2,14 +2,11 @@ import { KoeBilibiliDanmaku } from '@/scripts/types/Danmaku'
 import { LiveTCP } from 'bilibili-live-ws'
 import { ipcMain } from 'electron'
 import EventManager from 'electron-vue-event-manager'
+import _ from 'lodash'
 
-import {
-  DanmakuEventType,
-  IKoePlugin,
-  KoePlugin
-} from 'koe-bilibili-danmaku-library'
+import { DanmakuEventType } from 'D:/Projects/koe-bilibili-danmaku-library'
 
-export function createDanmakuReceiver(plugins: IKoePlugin[]) {
+export function createDanmakuReceiver() {
   /**
    * 人气值
    */
@@ -32,15 +29,9 @@ export function createDanmakuReceiver(plugins: IKoePlugin[]) {
     })
 
     // 主动获取人气值监听
-    ipcMain.once(DanmakuEventType.GetPopularity, (event) => {
+    ipcMain.on(DanmakuEventType.GetPopularity, (event) => {
       event.sender.send(DanmakuEventType.GetPopularity, _popularity)
     })
-
-    const pluginsInstance: KoePlugin[] = []
-    for (let i = 0; i < plugins.length; i++) {
-      const plugin = plugins[i]
-      pluginsInstance.push(new plugin())
-    }
 
     // 监听弹幕消息
     live.on('DANMU_MSG', async (data) => {
@@ -58,12 +49,32 @@ export function createDanmakuReceiver(plugins: IKoePlugin[]) {
         message
       }
 
-      for (let i = 0; i < pluginsInstance.length; i++) {
-        const instance = pluginsInstance[i]
-        danmaku = await instance.handle(danmaku)
+      console.log(`${danmaku.sender}: ${danmaku.message}`)
+
+      EventManager.Instance().broadcast<KoeBilibiliDanmaku.Danmaku>(
+        DanmakuEventType.ReceivedDanmaku,
+        danmaku
+      )
+    })
+
+    let currentGiftMessage = ''
+
+    live.on('SEND_GIFT', ({ data }) => {
+      const message = `${data.uname} ${data.action} ${data.num}个 ${data.giftName}`
+
+      // TODO: 优化防刷机制
+      if (currentGiftMessage === message) {
+        return
       }
 
-      console.log(`${danmaku.sender}: ${danmaku.message}`)
+      currentGiftMessage = message
+
+      let danmaku: KoeBilibiliDanmaku.Danmaku = {
+        id: `${_.random(0, 99999999)}`,
+        uid: data.uid,
+        sender: '',
+        message
+      }
 
       EventManager.Instance().broadcast<KoeBilibiliDanmaku.Danmaku>(
         DanmakuEventType.ReceivedDanmaku,

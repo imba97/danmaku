@@ -48,7 +48,9 @@
             : 'animate__fadeInUp'
         "
       >
-        <div class="danmaku-text">{{ item.sender }}: {{ item.message }}</div>
+        <div
+          class="danmaku-text"
+        >{{ item.sender !== '' ? `${item.sender}: ` : '' }}{{ item.message }}</div>
       </li>
     </ul>
   </div>
@@ -77,12 +79,13 @@ export default class Danmaku extends Vue {
   }
 
   created() {
-
     // 进入页面获取一次人气值
-    ipcRenderer.send(DanmakuEventType.GetPopularity)
     ipcRenderer.once(DanmakuEventType.GetPopularity, (_, popularity) => {
+      console.log('created', popularity)
       this.danmaku.popularity = popularity
     })
+
+    ipcRenderer.send(DanmakuEventType.GetPopularity)
 
     _.forEach([1, 2, 3, 4, 5], (num) => {
       this.danmaku.DANMU_MSG.push({
