@@ -3,9 +3,9 @@ import fs from 'fs-extra'
 import path from 'path'
 
 import { app } from 'electron'
-import { IKoePlugin } from 'koe-bilibili-danmaku-library'
+import { KoePlugin } from 'koe-bilibili-danmaku-library'
 
-export function loadPlugins(): IKoePlugin[] {
+export function loadPlugins(): KoePlugin[] {
   const filePath = path.resolve(app.getPath('userData'), 'plugins.json')
 
   if (!fs.existsSync(filePath)) {
@@ -15,8 +15,7 @@ export function loadPlugins(): IKoePlugin[] {
 
   const json = fs.readJsonSync(filePath)
 
-  const plugins: IKoePlugin[] = []
-  console.log('dependencies', _.get(json, 'dependencies', {}))
+  const plugins: KoePlugin[] = []
 
   const pluginsList = _.get(json, 'dependencies', {})
 
@@ -28,7 +27,7 @@ export function loadPlugins(): IKoePlugin[] {
   for (const key in pluginsList) {
     try {
       const pluginModule = loadFile(pluginsList[key]).default
-      plugins.push(pluginModule)
+      plugins.push(new pluginModule())
     } catch (e) {
       console.log(`${pluginsList[key]} err: `, e)
     }

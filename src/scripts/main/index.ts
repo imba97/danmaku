@@ -25,6 +25,7 @@ import { IBrowserWindow } from '@/scripts/renderer/Event/EventInterface'
 
 import { createWindowStateListener } from './Window'
 import { createDanmakuReceiver } from './DanmakuReceiver'
+import { loadPlugins } from './PluginLoader'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -85,8 +86,8 @@ async function createWindow() {
       width: 300 + (isDevelopment ? 800 : 0),
       height: 400 + (isDevelopment ? 300 : 0),
       path: 'app://./danmaku.html',
-      dev: 'danmaku.html',
-      transparent: true
+      dev: 'danmaku.html'
+      // transparent: true
     }
   }
 

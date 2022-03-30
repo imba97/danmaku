@@ -75,15 +75,7 @@
       <v-row>
         <v-col cols="3">
           <v-navigation-drawer style="width: 100%;" permanent>
-            <v-sheet color="grey lighten-4" class="pa-4">
-              <v-avatar class="mb-4" color="grey darken-1" size="64"></v-avatar>
-
-              <div>john@vuetifyjs.com</div>
-            </v-sheet>
-
-            <v-divider></v-divider>
-
-            <v-list>
+            <v-list class="pt-6">
               <v-list-item v-for="[icon, text] in links" :key="icon" link>
                 <v-list-item-icon>
                   <v-icon>{{ icon }}</v-icon>

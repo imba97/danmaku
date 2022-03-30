@@ -6,6 +6,9 @@ import _ from 'lodash'
 
 import { DanmakuEventType } from 'D:/Projects/koe-bilibili-danmaku-library'
 
+import { loadPlugins } from '../PluginLoader'
+const plugins = loadPlugins()
+
 export function createDanmakuReceiver() {
   /**
    * 人气值
@@ -47,6 +50,11 @@ export function createDanmakuReceiver() {
         uid,
         sender,
         message
+      }
+
+      // 调用插件
+      for (const pluginInstance of plugins) {
+        await pluginInstance.handle(danmaku)
       }
 
       console.log(`${danmaku.sender}: ${danmaku.message}`)
